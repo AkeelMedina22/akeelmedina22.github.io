@@ -1,0 +1,35 @@
+baseURL = 'https://akeelmedina22.github.io/'
+languageCode = 'en-us'
+title = "keelz dev journal"
+theme = 'm10c'
+
+[menu]
+  [[menu.main]]
+    identifier = "home"
+    name = "Home"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    identifier = "tags"
+    name = "Tags"
+    url = "/tags/"
+    weight = 2
+
+[params]
+author = 'Akeel'
+avatar = 'image.png'
+description = "Hey! I'm doing my Masters Degree at the University of Edinburgh in High Performance Computing. I wanted to keep a journal to record all the things I read and learn about HPC, follow along if you're interested!"
+
+[[params.social]]
+icon = "github"
+name = "Github"
+url = "https://github.com/AkeelMedina22"
+
+[[params.social]]
+icon = "linkedin"
+name = "linkedin"
+url = "https://www.linkedin.com/in/akeelmedina22/"
+
+[services]
+  [services.googleAnalytics]
+    ID = "G-5X16SGRRRX"
