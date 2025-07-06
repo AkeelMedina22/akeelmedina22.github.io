@@ -12,19 +12,35 @@ It turns out, understanding the "why" of threads requires looking at how a CPU e
 
 ### Pipelining: The CPU's Assembly Line
 
-![Basic 5-stage Pipeline Diagram](images/3.1.png "Basic 5-stage Pipeline Diagram")
+| Instruction     | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  |
+| :-------------- | :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
+| Instruction x   | IF | ID | EXE | MEM | WB |    |    |    |    |
+| Instruction x+1 |    | IF | ID | EXE | MEM | WB |    |    |    |
+| Instruction x+2 |    |    | IF | ID | EXE | MEM | WB |    |    |
+| Instruction x+3 |    |    |    | IF | ID | EXE | MEM | WB |    |
+| Instruction x+4 |    |    |    |    | IF | ID | EXE | MEM | WB |
 
 This should be a familiar diagram for anyone who has taken a course in Computer Architecture. The classic 5-stage pipeline, shown above, describes the simplified process every instruction goes through on a CPU core. To be clear, this diagram implies the core has one of everything: one unit for fetching, one for decoding, one for executing, and so on.
 
 But reality is more complex. A single thread will inevitably face **pipeline stalls**. Reading from memory, for instance, can take hundreds of cycles, leaving all those expensive hardware units sitting idle. To mitigate this, modern CPUs use 'Out-of-Order' (OoO) execution, which allows the core to find other independent instructions to work on while the slow one completes.
 
-![OOO Execution](images/3.2.png "OOO execution")
+| Instruction     | 1  | 2  | 3  | 4   | 5   | 6   | 7   | 8   | 9   | 10  |
+| :-------------- | :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
+| Instruction x   | IF | ID | EXE | MEM | WB  |     |     |     |     |     |
+| Instruction x+1 |    | IF | ID |     |     | EXE | MEM | WB  |     |     |
+| Instruction x+2 |    |    | IF | ID  | EXE | MEM |     |     | WB  |     |
+| Instruction x+3 |    |    |    | IF  | ID  |     | EXE | MEM |     | WB  |
 
 ### Superscalar Architecture: Doing More at Once
 
 Now here is the crucial insight. The architectural solution to stalls is what paves the way for multithreading. Modern CPUs can issue more than one instruction *in the same clock cycle*.
 
-![2-way Superscalar CPU](images/3.3.png "2-way Superscalar CPU")
+| Instruction     | 1  | 2  | 3   | 4   | 5   | 6   |
+| :-------------- | :-- | :-- | :-- | :-- | :-- | :-- |
+| Instruction x   | IF | ID | EXE | MEM | WB  |     |
+| Instruction x+1 | IF | ID | EXE | MEM | WB  |     |
+| Instruction x+2 |    | IF | ID  | EXE | MEM | WB  |
+| Instruction x+3 |    | IF | ID  | EXE | MEM | WB  |
 
 This is called **Instruction-Level Parallelism (ILP)**. A typical modern CPU has an issue width of 6 to 9, meaning it's equipped with multiple ALUs, FPUs, and Load/Store Units. The goal of all this hardware, combined with OoO execution and branch prediction, is to keep the core as saturated as possible with work from a single thread.
 
@@ -36,7 +52,18 @@ This brings us back to the original question. From the hardware’s perspective,
 
 As you can see in the diagram below, threads do not map 1:1 to physical cores. They are a mechanism to better utilize the parallel hardware already built into a single core.
 
-![Threading on a 4-way Superscalar CPU](images/3.4.png "Threading on a 4-way Superscalar CPU")
+|         | Non-SMT       | SMT2         | Legend                               |
+| :------ | :------------ | :----------- | :----------------------------------- |
+| cycles  |               |              |                                      |
+| 1       | 🟨⬜⬜⬜ | 🟨🟦⬜⬜ | ->🟨 : thread 1                       |
+| 2       | 🟨🟨⬜⬜ | 🟨🟨🟦🟦 | ->🟦 : thread 2                       |
+| 3       | ⬜⬜⬜⬜ | 🟦🟦🟦⬜ | ->⬜ : unused slot                    |
+| 4       | 🟨🟨🟨⬜ | 🟨🟨🟨⬜ |                                      |
+| 5       | ⬜⬜⬜⬜ | 🟦⬜⬜⬜ |                                      |
+| 6       | 🟨⬜⬜⬜ | 🟨🟦🟦⬜ |                                      |
+| 7       | 🟨🟨🟨🟨 | 🟨🟨🟨🟨 |                                      |
+| 8       | 🟨🟨⬜⬜ | 🟨🟨🟦🟦 |                                      |
+
 
 ### Practical Implications: When SMT Helps and Hurts
 
