@@ -86,19 +86,25 @@ namespace MatrixTransform {
 
 **Step 2: Implement the Logic and Register It**
 
-Next, in `omp_avx2_multiplier.cpp`, I'll write the actual matrix multiplication logic. But the most important part is the two lines of code that register this new class with our `MultiplierRegistry`.
+Next, in `ompavx2_multiplier.cpp`, I'll write the actual matrix multiplication logic. But the most important part is the two lines of code that register this new class with our `MultiplierRegistry`. 
+P.S, I didn't use the fused multiply add command because for some extremely confusing reason, I consistently got a `target specific option mismatch` error. Despite having the write compile time flags and includes. I even installed a newer GCC but it was still omnipresent. 
 
 ```cpp
-#include "omp_avx2_multiplier.hpp"
+#ifdef WITH_OMPAVX2
+
+#include "logger.hpp"
+#include "ompavx2_multiplier.hpp"
 #include "multiplier_registry.hpp"
-// etc.
+#include <Eigen/Dense>
+#include <chrono>
+#include <omp.h>
 
 namespace MatrixTransform {
 
     // This global object's constructor registers our new multiplier before main() even starts.
     namespace { 
         MultiplierRegistrar OMPAVX2Registrar( 
-            "OMP_AVX2_CPU", // The key we'll use in our config
+            "OMP_AVX2",
             []() -> std::unique_ptr<IMultiplier> { 
                 return std::make_unique<OMPAVX2Multiplier>();
             }
@@ -107,22 +113,48 @@ namespace MatrixTransform {
     
     Matrix OMPAVX2Multiplier::multiply(const Matrix& a, const Matrix& b) {
         // ...
-        // To-Do
-        // ...
-        return result;
-    }
+        #pragma omp parallel for
+        for (int i = 0; i < a.rows(); ++i) {
+            for (int j = 0; j < b_T.rows(); ++j) {
+                __m256 sum_vec = _mm256_setzero_ps();
 
+                int k = 0;
+                for (; k <= a.cols() - 8; k += 8) {
+                    __m256 a_vec = _mm256_loadu_ps(&a(i, k));
+                    __m256 b_vec = _mm256_loadu_ps(&b_T(j, k));
+
+                    __m256 prod_vec = _mm256_mul_ps(a_vec, b_vec);
+                    sum_vec = _mm256_add_ps(sum_vec, prod_vec);
+                }
+
+                float sum_arr[8];
+                _mm256_storeu_ps(sum_arr, sum_vec);
+                float result = sum_arr[0] + sum_arr[1] + sum_arr[2] + sum_arr[3] +
+                            sum_arr[4] + sum_arr[5] + sum_arr[6] + sum_arr[7];
+                
+                for (; k < a.cols(); ++k) {
+                    result += a(i, k) * b_T(j, k);
+                }
+                
+                c(i, j) = result;
+            }
+        }
+    }
+    // ...
+    
 } // namespace MatrixTransform
+
+#endif
 ```
 
 **Step 3: Update the Config**
 
-Finally, I just need to tell the factory to use my new backend. I'll create a new config file or just edit the existing one to use the key `"OMP_AVX2_CPU"`.
+Finally, I just need to tell the factory to use my new backend. I'll create a new config file or just edit the existing one to use the key `"OMP_AVX2"`.
 
 ```json
 {
-  "backend": "OMP_AVX2_CPU",
-  "log_level": "info"
+  "backend": "OMP_AVX2",
+  "log_level": "debug"
 }
 ```
 
@@ -144,7 +176,7 @@ std::unique_ptr<IMultiplier> Factory::createMultiplier(const std::string& key) {
         return std::make_unique<CUDAMultiplier>();
     } else if (key == "cuBLAS") {
         return std::make_unique<cuBLASMultiplier>();
-    } else if (key == "OMP_AVX2_CPU") { // <- Must add this else-if for a new type
+    } else if (key == "OMP_AVX2") { // <- Must add this else-if for a new type
         return std::make_unique<OMPAVX2Multiplier>();
     }
     // ...
@@ -153,9 +185,9 @@ std::unique_ptr<IMultiplier> Factory::createMultiplier(const std::string& key) {
 
 The `Factory` and `main` are completely decoupled from the concrete multiplier types using the Registry. They only operate on two things: the string key, and the abstract interface.
 
-However, it should be noted that I've configured CMake to allow usage of CUDA, OpenMP, and Vectorization (using a string). A sample command to generate build files is:
+However, it should be noted that I've configured CMake to allow usage of CUDA, OpenMP, and Vectorization (using a string). A sample command to generate build files and run the program is:
 ```shell
-cmake .. -DENABLE_OPENMP=ON -DVECTORIZATION_MODE=AVX2 -DENABLE_CUDA=ON
+mkdir -p build && cd build && cmake .. -DENABLE_OPENMP=ON -DVECTORIZATION_MODE=AVX2 -DENABLE_CUDA=ON && make && src/matrix_app ../src/config.json
 ```
 If there is any custom multiplier added which requires any other library or API, the CMakeLists.txt will need to be updated accordingly. Also, any source file (`_.cpp`) would need to be added as well. 
 
@@ -167,12 +199,17 @@ So, what was the point of all this? To easily swap out backends and test perform
 
 Here are the results:
 
-| Backend          | Time (ms) | Notes                               |
-| ---------------- | --------- | ----------------------------------- |
-| `CPU (Eigen)`    | 16006     | Highly optimized CPU implementation |
-| `CUDA`           | 672       | Custom tiled CUDA kernel            |
-| `cuBLAS`         | 58        | NVIDIA's optimized library          |
-| `OMP_AVX2_CPU`   |           | Custom CPU implementation           |
+| Backend          | Time (ms) | Notes                                    |
+| ---------------- | --------- | -----------------------------------------|
+| `OMP`            | 13307     | 1 thread for 1 element in C (xSIMD)      |
+| `CPU (Eigen)`    | 4675      | Optimized CPU implementation (xSIMD,xOMP)|
+| `OMP_AVX2_CPU`   | 1028      | 1 thread for 1 element in C (SIMD)       |
+| `CUDA`           | 547       | Custom tiled CUDA kernel                 |
+| `cuBLAS`         | 48        | NVIDIA's optimized GPU library           |
+
+Some notes on these results. As you saw in the custom implementation, I parallelized with OpenMP in such a way that 1 thread would be assigned to 1 element in the result matrix. Without SIMD, this performed quite terribly. But to be honest, I am surprised by the improvements with SIMD. I will probably make a short post about it, I had this idea that switching from normal dot products to doing 8 at once with SIMD would bring about a maximum of 8x performance improvement, but it is ~13x in this example. I have some ideas, while reading the book *Performance Analysis and Tuning on Modern CPUs* by Denis Bakhvalov, such as hardware prefetching, lesser memory stalls, etc., but it deserves its own post.
+
+It's also important to note that these are just multiplication times. Both GPU implementations have some *relatively* significant time spent initializing the CUDA context and allocating memory on the GPU. Copying data to and from is relatively fast, around 5-15ms back since its just a single 1000x1000 matrix. But the initialization (maybe the memory allocation included?) costs around `1000ms`.  
 
 -----
 
@@ -198,7 +235,7 @@ For example, `main.cpp` might look like this with DI:
 int main() {
     // Parse config.json
     // Create Logger instance
-    //
+    // etc.
 
     // The user explicitly creates the dependency.
     auto my_multiplier = std::make_unique<MatrixTransform::cuBLASMultiplier>(logger, config_options);
