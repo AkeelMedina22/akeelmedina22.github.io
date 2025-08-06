@@ -6,7 +6,7 @@ tags: ["HPC", "SMT", "CPU", "Performance", "Computer Architecture", "ILP"]
 draft: false
 ---
 
-While reading *Performance Analysis and Tuning on Modern CPUs* by Denis Bakhvalov, I had a surprising realization. Before this book, I had a completely incorrect understanding of what a thread is. Somewhere in my mental model of CPU microarchitecture, the "thread" was a muddy concept that vaguely correlated to a physical core, but it was more of an abstraction. I never interacted much with them because of Python's horrendous GIL, and my main use case was in compute-bound workflows.
+While reading *Performance Analysis and Tuning on Modern CPUs* by Denis Bakhvalov, I had a surprising realization. Before this book, I had a completely incorrect understanding of what a thread is. Somewhere in my mental model of CPU microarchitecture, the "thread" was a muddy concept that vaguely correlated to a physical core, but it was more of an abstraction. I never interacted much with them because of Python's Global Interpreter Lock (GIL), well-known for nulling any performance gain from SMT in compute-bound workflows, which was my main use case.
 
 It turns out, understanding the "why" of threads requires looking at how a CPU executes instructions. Let's start there.
 
