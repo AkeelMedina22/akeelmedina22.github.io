@@ -1,6 +1,6 @@
 ---
 title: "Understanding Simultaneous Multithreading (SMT)"
-date: 2025-07-02T19:11:23
+date: 2025-08-06T00:00:00
 description: "Why SMT exists, how it improves performance by tackling CPU stalls, and what it means for your code."
 tags: ["HPC", "SMT", "CPU", "Performance", "Computer Architecture", "ILP"]
 draft: false

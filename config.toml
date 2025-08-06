@@ -18,7 +18,7 @@ theme = 'm10c'
 [params]
 author = 'Akeel'
 avatar = 'image.png'
-description = "Hey! I'm doing my Masters Degree at the University of Edinburgh in High Performance Computing. I wanted to keep a journal to record all the things I read and learn about HPC, follow along if you're interested!"
+description = "A place for my thought and programming explorations while starting my journey in HPC"
 
 [[params.social]]
 icon = "github"
