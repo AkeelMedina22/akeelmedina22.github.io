@@ -1,0 +1,41 @@
+{{ define "main" }}
+  {{- $papers := where .Site.RegularPages "Section" "papers" -}}
+  {{- $posts := where .Site.RegularPages "Section" "posts" -}}
+  {{- $shown := 3 -}}
+
+  {{- with .Content }}
+  <section class="home-intro">
+    {{ . }}
+  </section>
+  {{- end }}
+
+  <section class="home-section">
+    <div class="section-head">
+      <h2>Paper Reviews{{ if gt (len $papers) $shown }}<span class="section-count">latest {{ $shown }} of {{ len $papers }}</span>{{ end }}</h2>
+      {{- if $papers }}<a class="section-more" href="/papers/">View all &rarr;</a>{{ end }}
+    </div>
+    <p class="section-blurb">Short paper reviews.</p>
+    {{- if $papers }}
+    <div class="paper-grid">
+      {{- range first $shown $papers }}
+        {{ partial "paper-card.html" . }}
+      {{- end }}
+    </div>
+    {{- else }}
+    <p class="empty-state">No reviews published yet.</p>
+    {{- end }}
+  </section>
+
+  <section class="home-section">
+    <div class="section-head">
+      <h2>Blog{{ if gt (len $posts) $shown }}<span class="section-count">latest {{ $shown }} of {{ len $posts }}</span>{{ end }}</h2>
+      {{- if $posts }}<a class="section-more" href="/posts/">View all &rarr;</a>{{ end }}
+    </div>
+    <p class="section-blurb">Articles and reflections.</p>
+    <ul class="posts-list">
+      {{- range first $shown $posts }}
+        {{ partial "post-item.html" . }}
+      {{- end }}
+    </ul>
+  </section>
+{{ end }}

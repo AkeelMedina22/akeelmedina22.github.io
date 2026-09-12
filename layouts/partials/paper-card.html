@@ -1,0 +1,31 @@
+{{- $p := .Params.paper -}}
+{{- $cats := slice -}}
+{{- range .Params.categories }}{{ $cats = $cats | append (. | urlize) }}{{ end -}}
+{{- $haystack := lower (printf "%s %s %s %s %s" .Title (.Params.summary | default "") ($p.title | default "") ($p.authors | default "") (delimit (.Params.tags | default slice) " ")) -}}
+<article class="paper-card" data-categories="{{ delimit $cats " " }}" data-search="{{ $haystack }}">
+  <header class="paper-card-head">
+    <h3 class="paper-card-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  </header>
+  {{- $cite := slice -}}
+  {{- with $p.authors }}{{ $cite = $cite | append . }}{{ end -}}
+  {{- $venue := $p.venue | default "" -}}
+  {{- $year := cond (isset $p "year") (string $p.year) "" -}}
+  {{- if and $year (not (in $venue $year)) }}{{ $venue = trim (printf "%s %s" $venue $year) " " }}{{ end -}}
+  {{- with $venue }}{{ $cite = $cite | append . }}{{ end -}}
+  {{- with $cite }}
+  <p class="paper-card-cite">{{ delimit . " · " }}</p>
+  {{- end }}
+  {{- with .Params.summary }}
+  <p class="paper-card-summary">{{ . }}</p>
+  {{- end }}
+  {{- if or .Params.categories .Params.tags }}
+  <div class="chip-row">
+    {{- range .Params.categories }}
+    <span class="chip chip-category">{{ . }}</span>
+    {{- end }}
+    {{- range .Params.tags }}
+    <span class="chip">{{ . }}</span>
+    {{- end }}
+  </div>
+  {{- end }}
+</article>

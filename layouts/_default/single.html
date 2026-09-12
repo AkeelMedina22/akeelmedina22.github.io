@@ -1,0 +1,32 @@
+{{ define "main" }}
+  <article class="post">
+    <header class="post-header">
+      {{- if eq .Section "posts" }}
+      <p class="breadcrumb"><a href="/posts/">{{ partial "icon.html" (dict "ctx" $ "name" "arrow-left") }} Blog</a></p>
+      {{- end }}
+      <h1 class="post-title">{{ .Title }}</h1>
+      {{- if ne .Type "page" }}
+      <div class="post-meta">
+        <div>
+          {{ partial "icon.html" (dict "ctx" $ "name" "calendar") }}
+          {{ .PublishDate.Format "Jan 2, 2006" }}
+        </div>
+        <div>
+          {{ partial "icon.html" (dict "ctx" $ "name" "clock") }}
+          {{ .ReadingTime }} min read
+        </div>
+      </div>
+      {{- with .Params.tags }}
+      <div class="chip-row">
+        {{- range . }}
+          {{ with $.Site.GetPage (printf "/tags/%s" .) }}<a class="chip" href="{{ .Permalink }}">{{ .Title }}</a>{{ end }}
+        {{- end }}
+      </div>
+      {{- end }}
+      {{- end }}
+    </header>
+    <div class="post-content">
+      {{ .Content }}
+    </div>
+  </article>
+{{ end }}

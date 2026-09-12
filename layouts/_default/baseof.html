@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="{{ .Site.LanguageCode | default "en-us" }}">
+  <head>
+    <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} // {{ .Site.Title }}{{ end }}</title>
+    <link rel="shortcut icon" href="{{ .Site.Params.favicon | default "/favicon.ico" }}" />
+    <meta charset="utf-8" />
+    {{ hugo.Generator }}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="{{ .Site.Params.author }}" />
+    <meta name="description" content="{{ if .IsHome }}{{ .Site.Params.description }}{{ else }}{{ .Description | default .Site.Params.description }}{{ end }}" />
+    <link rel="canonical" href="{{ .Permalink }}" />
+    {{ $style := resources.Get "css/main.scss" | resources.ExecuteAsTemplate "css/main.scss" . | css.Sass | resources.Minify | resources.Fingerprint -}}
+    <link rel="stylesheet" href="{{ $style.RelPermalink }}" />
+    {{ with .OutputFormats.Get "rss" -}}
+    {{ printf `<link rel=%q type=%q href=%q title=%q>` .Rel .MediaType.Type .Permalink site.Title | safeHTML }}
+    {{ end }}
+
+    {{ template "_internal/google_analytics.html" . }}
+    {{ template "_internal/twitter_cards.html" . }}
+    {{ template "_internal/opengraph.html" . }}
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="app-header">
+      <a class="app-header-identity" href="{{ .Site.BaseURL }}">
+        <img class="app-header-avatar" src="{{ .Site.Params.avatar | default "avatar.jpg" | relURL }}" alt="{{ .Site.Params.author }}" />
+        <span class="app-header-title">{{ .Site.Title }}</span>
+      </a>
+      {{- with .Site.Params.tagline }}
+      <p class="app-header-tagline">{{ . }}</p>
+      {{- end }}
+      {{- with .Site.Menus.main }}
+      <nav class="app-header-menu" aria-label="Main">
+        {{- range . }}
+          {{- $active := or (eq $.RelPermalink .URL) (and (ne .URL "/") (hasPrefix $.RelPermalink .URL)) }}
+          <a class="app-header-menu-item{{ if $active }} is-active{{ end }}" href="{{ .URL }}">{{ .Name }}</a>
+        {{- end }}
+      </nav>
+      {{- end }}
+      {{- with .Site.Params.social }}
+      <div class="app-header-social">
+        {{ range . }}
+          <a href="{{ .url }}" title="{{ .name }}"{{ if not (hasPrefix .url "mailto:") }} target="_blank" rel="noreferrer noopener me"{{ end }}>
+            {{ partial "icon.html" (dict "ctx" $ "name" .icon "title" .name) }}
+          </a>
+        {{ end }}
+      </div>
+      {{- end }}
+    </header>
+    <main class="app-container" id="content">
+      {{ block "main" . }}
+        {{ .Content }}
+      {{ end }}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+---
+title: "Reflections on my MSc Thesis"
+date: 2026-09-11T00:00:00
+description: "An ode to research, and what I learned through my thesis."
+tags: ["HPC", "GPU", "CUDA", "NVML", "CUPTI", "LLM", "Profiling", "KV Cache", "Interconnects", "Energy"]
+draft: false
+---
+
+I completed my MSc thesis on the 22nd of August, and left Edinburgh on the 26th. Everything went by in a blur, after a life changing year abroad. Today is the 11th of September, it's been just over 2 weeks, and I wanted to write a short reflection piece. You can read my thesis if you're interested in profiling KV cache offload, I'll be making it available as soon as it is graded. 
+
+I started this year with practically no experience in Large Language Models, I expected to go deep into HPC, working on simulation sciences, potentially working with novel accelerators available at the EPCC like Cerebras and Tenstorrent. When working on the Student Cluster Competition, I ended up working on optimizing `llama.cpp`, and decided to keep my thesis relevant. I started with research in energy efficiency- Zeus and Perseus were my biggest inspirations, from the ML.Energy group. I struggled to formulate a good dissertation proposal, so I went headfirst into experimentation. Writing profiling software, testing the limits of telemetry, and just engaging with modern research. I slowly started to understand the process of research, and the importance of direction. I wanted to experiment with DVFS in inference, but preliminary results were not promising. After a few pivots, experimenting more with `llama.cpp`, I ended up learning about interconnect technologies and memory disaggregation. Specifically, CXL. After failing to emulate CXL for GPU memory accesses with `llama.cpp`, I decided to focus on profiling. However, I wanted to build something useful, and what ended up being my thesis was the question of the exact cost, in terms of energy and time, for KV offload across NVLink-C2C and PCIe interconnects. Essentially, using these two test cases, keeping computation constant, varied interconnect bandwidth, could we predict the cost of future memory technologies like CXL? 
+
+After around 3 months of working on this, with a short interlude in Hamburg for the SCC, I handed in my dissertation, feeling satisfied. Could I have done more, produced a more focused thesis, sure. However, I'm happy with my submission. I learned alot, from technical stuff (that I thoroughly enjoyed) to my own interests. I'd never felt that sort of 'buzz', the excitement and relief of experiments working out. Especially towards the end of my dissertation, when the numbers started to make sense, I became sure that I wanted to do this again, and go for a PhD. I often read PhD theses from top labs in MLSys, the technical clarity, but also the intention, or conviction by which it was put together, I find it profound, beautiful.
+
+I'm excited for what the future holds! I have to thank the EPCC for this opportunity, the hardware and the chance to study at the University of Edinburgh, it's been amazing! 

@@ -1,0 +1,51 @@
+{{ define "main" }}
+  {{- $p := .Params.paper -}}
+  <article class="post">
+    <header class="post-header">
+      <p class="breadcrumb"><a href="/papers/">{{ partial "icon.html" (dict "ctx" $ "name" "arrow-left") }} Paper Reviews</a></p>
+      <h1 class="post-title">{{ .Title }}</h1>
+      <div class="post-meta">
+        <div>
+          {{ partial "icon.html" (dict "ctx" $ "name" "calendar") }}
+          {{ .PublishDate.Format "Jan 2, 2006" }}
+        </div>
+        <div>
+          {{ partial "icon.html" (dict "ctx" $ "name" "clock") }}
+          {{ .ReadingTime }} min read
+        </div>
+      </div>
+    </header>
+
+    {{- with $p }}
+    <aside class="paper-ref">
+      <p class="paper-ref-title">{{ .title | default "Reference" }}</p>
+      {{- $cite := slice -}}
+      {{- with .authors }}{{ $cite = $cite | append . }}{{ end -}}
+      {{- $venue := .venue | default "" -}}
+      {{- $year := cond (isset . "year") (string .year) "" -}}
+      {{- if and $year (not (in $venue $year)) }}{{ $venue = trim (printf "%s %s" $venue $year) " " }}{{ end -}}
+      {{- with $venue }}{{ $cite = $cite | append . }}{{ end -}}
+      {{- with $cite }}<p class="paper-ref-cite">{{ delimit . " · " }}</p>{{ end }}
+      <div class="paper-ref-links">
+        {{- with .url }}<a href="{{ . }}" target="_blank" rel="noreferrer noopener">{{ partial "icon.html" (dict "ctx" $ "name" "file-text") }} Paper</a>{{ end }}
+        {{- with .code }}<a href="{{ . }}" target="_blank" rel="noreferrer noopener">{{ partial "icon.html" (dict "ctx" $ "name" "github") }} Code</a>{{ end }}
+      </div>
+    </aside>
+    {{- end }}
+
+    {{- if or .Params.categories .Params.tags }}
+    <div class="chip-row">
+      {{- range .Params.categories }}
+      <a class="chip chip-category" href="{{ printf "/papers/?c=%s" (. | urlize) }}">{{ . }}</a>
+      {{- end }}
+      {{- range .Params.tags }}
+      {{- with $.Site.GetPage (printf "/tags/%s" .) }}<a class="chip" href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}
+      {{- end }}
+    </div>
+    {{- end }}
+
+    <div class="post-content">
+      {{ .Content }}
+    </div>
+  </article>
+{{ end }}

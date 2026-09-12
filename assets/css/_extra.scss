@@ -1,0 +1,650 @@
+// ---------------------------------------------------------------------------
+// Project overrides for m10c. Imported last by the theme's main.scss.
+// Palette variables ($darkest-color, $dark-color, $light-color,
+// $lightest-color, $primary-color) come from config.toml [params.style].
+// ---------------------------------------------------------------------------
+
+// The site olive. Used structurally (borders, card surfaces, chips) rather than
+// for text: at 2.1:1 on the body background it is far below the 4.5:1 needed to
+// read. $primary-color carries the same hue at a legible lightness.
+$olive: #505648;
+
+$surface: mix($olive, $dark-color, 42%);
+$surface-hi: mix($olive, $dark-color, 62%);
+$border: $olive;
+$border-hi: lighten($olive, 12%);
+$muted: rgba($light-color, 0.76);
+
+$font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+// --- base -------------------------------------------------------------------
+
+html { -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: $font-sans;
+  line-height: 1.65;
+}
+
+code, pre { font-family: $font-mono; }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 0.6em 1em;
+  background: $primary-color;
+  color: $darkest-color;
+  z-index: 100;
+
+  &:focus { left: 0; }
+}
+
+// --- sidebar ----------------------------------------------------------------
+
+.app-header {
+  padding: 2.25rem 1.75rem;
+  border-bottom: 1px solid $border;
+}
+
+.app-header-identity {
+  display: block;
+  color: inherit;
+
+  &:hover { color: inherit; }
+}
+
+.app-header-avatar {
+  width: 8.5rem;
+  height: 8.5rem;
+  border-width: 0.25rem;
+  border-color: rgba($primary-color, 0.75);
+  transition: border-color 0.35s;
+
+  .app-header-identity:hover & { border-color: $primary-color; }
+}
+
+.app-header-title {
+  font-size: 1.4rem;
+  line-height: 1.3;
+  margin: 0.9rem 0 0;
+  letter-spacing: -0.01em;
+}
+
+.app-header-tagline {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: $muted;
+}
+
+.app-header-menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 1.5rem 0 1.25rem;
+}
+
+.app-header-menu-item {
+  padding: 0.35em 0.9em;
+  border: 1px solid transparent;
+  border-radius: 0.35em;
+  font-size: 0.92rem;
+  color: $light-color;
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+
+  &:hover {
+    background: rgba($light-color, 0.1);
+    color: $lightest-color;
+  }
+
+  &.is-active {
+    color: $primary-color;
+    border-color: rgba($primary-color, 0.5);
+    background: rgba($primary-color, 0.1);
+  }
+}
+
+.app-header-social {
+  font-size: 1.35rem;
+
+  a {
+    color: $muted;
+    padding: 0.2em;
+
+    &:hover { color: $primary-color; }
+  }
+
+  a:not(:last-child) { margin-right: 0.3em; }
+}
+
+// --- container --------------------------------------------------------------
+
+.app-container {
+  padding: 2.5rem 1.75rem 4rem;
+}
+
+@media (min-width: 940px) {
+  .app-header {
+    width: 18.5rem;
+    padding: 3rem 2rem;
+    border-bottom: 0;
+    border-right: 1px solid $border;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .app-container {
+    max-width: 56rem;
+    margin-left: 18.5rem;
+    padding: 3.5rem 3rem 6rem;
+  }
+
+  // Stack the nav in the sidebar so an item can never overflow its width,
+  // however long the label gets.
+  .app-header-menu {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    margin: 1.75rem 0 1.5rem;
+  }
+}
+
+// --- page furniture ---------------------------------------------------------
+
+.page-head {
+  margin-bottom: 2.25rem;
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+  }
+}
+
+.page-intro {
+  margin-top: 0.75rem;
+  color: $muted;
+  max-width: 44rem;
+
+  p { margin: 0.5em 0; }
+}
+
+.breadcrumb {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    color: $muted;
+
+    &:hover { color: $primary-color; }
+  }
+
+  .icon { width: 1em; height: 1em; }
+}
+
+.empty-state {
+  padding: 2rem;
+  border: 1px dashed $border-hi;
+  border-radius: 0.5rem;
+  text-align: center;
+  color: $muted;
+}
+
+// --- home -------------------------------------------------------------------
+
+.home-intro {
+  max-width: 44rem;
+  margin-bottom: 3rem;
+
+  h1 {
+    margin: 0 0 0.6rem;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  p { margin: 0.7em 0; }
+}
+
+.home-section { margin-bottom: 3.25rem; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid $border;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+  }
+}
+
+.section-more {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.section-count {
+  margin-left: 0.5em;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: $muted;
+  white-space: nowrap;
+}
+
+.section-blurb {
+  margin: 0.9rem 0 1.4rem;
+  color: $muted;
+  font-size: 0.92rem;
+  max-width: 44rem;
+}
+
+// --- chips ------------------------------------------------------------------
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.9rem 0 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin: 0;
+  padding: 0.2em 0.7em;
+  font-size: 0.78rem;
+  font-family: inherit;
+  line-height: 1.6;
+  border: 1px solid $border;
+  border-radius: 2em;
+  background: $surface;
+  color: $muted;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($light-color, 0.12);
+    color: $lightest-color;
+  }
+}
+
+.chip-category {
+  border-color: rgba($primary-color, 0.4);
+  background: rgba($primary-color, 0.12);
+  color: $primary-color;
+
+  &:hover {
+    background: rgba($primary-color, 0.2);
+    color: $primary-color;
+  }
+}
+
+.chip-toggle {
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+
+  &.is-active {
+    border-color: $primary-color;
+    background: rgba($primary-color, 0.18);
+    color: $primary-color;
+  }
+}
+
+.chip-count {
+  font-size: 0.9em;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+// --- paper filter -----------------------------------------------------------
+
+.filter-bar { margin-bottom: 1.75rem; }
+
+.filter-search {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.55em 0.9em;
+  border: 1px solid $border;
+  border-radius: 0.45rem;
+  background: $surface;
+  color: $muted;
+  transition: border-color 0.25s;
+
+  &:focus-within { border-color: rgba($primary-color, 0.6); }
+
+  .icon {
+    width: 1.05em;
+    height: 1.05em;
+    flex: none;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: none;
+    color: $lightest-color;
+    font: inherit;
+    font-size: 0.92rem;
+    outline: none;
+
+    &::placeholder { color: rgba($light-color, 0.45); }
+  }
+}
+
+.filter-chips { margin-top: 0.85rem; }
+
+.filter-count {
+  margin: 0.85rem 0 0;
+  font-size: 0.82rem;
+  color: $muted;
+  min-height: 1.2em;
+}
+
+// --- paper cards ------------------------------------------------------------
+
+.paper-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.paper-card {
+  padding: 1.15rem 1.3rem;
+  border: 1px solid $border;
+  border-radius: 0.55rem;
+  background: $surface;
+  transition: border-color 0.25s, background 0.25s;
+
+  &:hover {
+    border-color: $border-hi;
+    background: $surface-hi;
+  }
+
+  &[hidden] { display: none; }
+}
+
+.paper-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
+.paper-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+
+  a { color: $lightest-color; }
+  a:hover { color: $primary-color; }
+}
+
+.paper-card-cite {
+  margin: 0.3rem 0 0;
+  font-size: 0.82rem;
+  color: $muted;
+}
+
+.paper-card-summary {
+  margin: 0.65rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+// --- paper reference block --------------------------------------------------
+
+.paper-ref {
+  margin: 1.75rem 0;
+  padding: 1.15rem 1.3rem;
+  border: 1px solid $border;
+  border-left: 0.25rem solid rgba($primary-color, 0.8);
+  border-radius: 0.5rem;
+  background: $surface;
+}
+
+.paper-ref-title {
+  margin: 0;
+  color: $lightest-color;
+  font-size: 1rem;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.paper-ref-cite {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: $muted;
+}
+
+.paper-ref-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  margin-top: 0.85rem;
+  font-size: 0.85rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+
+  .icon {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+// --- posts list -------------------------------------------------------------
+
+.posts-list { margin: 0; }
+
+.posts-list-item {
+  padding: 1.1rem 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border;
+  }
+}
+
+.posts-list-item-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: $lightest-color;
+  letter-spacing: -0.01em;
+
+  &:hover { color: $primary-color; }
+}
+
+.posts-list-item-summary {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: $muted;
+  max-width: 44rem;
+}
+
+.posts-list-item-description {
+  margin-top: 0.5rem;
+  color: $muted;
+  font-size: 0.78rem;
+
+  .icon {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+// --- article body -----------------------------------------------------------
+
+.post-header { margin-bottom: 2rem; }
+
+.post-title {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  margin-top: 0.7rem;
+  color: $muted;
+
+  > div { font-size: 0.82rem; }
+
+  .icon {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.post-content {
+  max-width: 46rem;
+
+  h2 {
+    margin: 2.4rem 0 0.8rem;
+    font-size: 1.4rem;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    margin: 2rem 0 0.6rem;
+    font-size: 1.15rem;
+  }
+
+  h4 {
+    margin: 1.6rem 0 0.5rem;
+    font-size: 1rem;
+  }
+
+  p { margin: 1.05em 0; }
+
+  ul, ol { padding-left: 1.3em; }
+
+  li { margin: 0.35em 0; }
+
+  hr {
+    margin: 2.5rem 0;
+    border: 0;
+    border-top: 1px solid $border;
+  }
+
+  img {
+    display: block;
+    margin: 1.5rem auto;
+    border-radius: 0.4rem;
+  }
+
+  a { text-decoration: underline; text-underline-offset: 0.15em; }
+
+  code {
+    padding: 0.12em 0.35em;
+    border-radius: 0.25em;
+    background: rgba($light-color, 0.1);
+    font-size: 0.88em;
+  }
+
+  pre code {
+    padding: 0;
+    background: none;
+  }
+
+  & > pre,
+  .highlight > pre,
+  .highlight > div {
+    border-radius: 0 0.4rem 0.4rem 0;
+    background: $darkest-color;
+    line-height: 1.5;
+  }
+
+  blockquote { border-radius: 0 0.4rem 0.4rem 0; }
+
+  table {
+    width: 100%;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    padding: 0.55em 0.8em;
+    border-bottom: 1px solid $border;
+    text-align: left;
+  }
+
+  th {
+    color: $lightest-color;
+    font-weight: 600;
+    border-bottom-color: $border-hi;
+  }
+
+  tbody tr:hover { background: rgba($light-color, 0.04); }
+
+  .table-scroll {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+
+    table { margin: 0; }
+  }
+}
+
+// --- about page -------------------------------------------------------------
+
+.entry {
+  padding: 1.15rem 0;
+
+  &:not(:last-child) { border-bottom: 1px solid $border; }
+}
+
+.entry-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.entry-title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: $lightest-color;
+}
+
+.entry-when {
+  flex: none;
+  font-size: 0.8rem;
+  color: $muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.entry-where {
+  margin: 0.2rem 0 0;
+  font-size: 0.88rem;
+  color: $primary-color;
+}
+
+.entry-body {
+  margin: 0.55rem 0 0;
+  font-size: 0.93rem;
+
+  p { margin: 0.5em 0; }
+  ul { margin: 0.5em 0; padding-left: 1.2em; }
+}

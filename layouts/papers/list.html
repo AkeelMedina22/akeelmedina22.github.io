@@ -1,0 +1,116 @@
+{{ define "main" }}
+  {{- $papers := .RegularPagesRecursive -}}
+  {{- $cats := slice -}}
+  {{- range $papers }}{{ range .Params.categories }}{{ $cats = $cats | append . }}{{ end }}{{ end -}}
+  {{- $cats = $cats | uniq | sort -}}
+
+  <article>
+    <header class="page-head">
+      <h1>{{ .Title }}</h1>
+      {{- with .Content }}<div class="page-intro">{{ . }}</div>{{ end }}
+    </header>
+
+    {{- if $papers }}
+    <div class="paper-filter" data-paper-filter>
+      <div class="filter-bar" data-filter-bar hidden>
+        <label class="filter-search">
+          {{ partial "icon.html" (dict "ctx" $ "name" "search") }}
+          <input type="search" placeholder="Search titles, authors, tags&hellip;" data-search-input aria-label="Search paper reviews" />
+        </label>
+        <div class="chip-row filter-chips" role="group" aria-label="Filter by category">
+          <button type="button" class="chip chip-toggle is-active" data-cat-all>All <span class="chip-count">{{ len $papers }}</span></button>
+          {{- range $cats }}
+          {{- $n := len (where $papers "Params.categories" "intersect" (slice .)) }}
+          <button type="button" class="chip chip-toggle" data-cat="{{ . | urlize }}">{{ . }} <span class="chip-count">{{ $n }}</span></button>
+          {{- end }}
+        </div>
+        <p class="filter-count" data-count aria-live="polite"></p>
+      </div>
+
+      <div class="paper-grid" data-paper-grid>
+        {{- range $papers }}
+          {{ partial "paper-card.html" . }}
+        {{- end }}
+      </div>
+      <p class="empty-state" data-empty hidden>No reviews match those filters.</p>
+    </div>
+    {{- else }}
+    <p class="empty-state">No reviews published yet.</p>
+    {{- end }}
+  </article>
+
+  <script>
+  (function () {
+    var root = document.querySelector('[data-paper-filter]');
+    if (!root) { return; }
+    var bar = root.querySelector('[data-filter-bar]');
+    var cards = Array.prototype.slice.call(root.querySelectorAll('.paper-card'));
+    var chips = Array.prototype.slice.call(root.querySelectorAll('[data-cat]'));
+    var allChip = root.querySelector('[data-cat-all]');
+    var input = root.querySelector('[data-search-input]');
+    var countEl = root.querySelector('[data-count]');
+    var emptyEl = root.querySelector('[data-empty]');
+    var active = [];
+
+    bar.hidden = false;
+
+    function matches(card) {
+      var q = (input.value || '').trim().toLowerCase();
+      if (q && (card.getAttribute('data-search') || '').indexOf(q) === -1) { return false; }
+      if (!active.length) { return true; }
+      var own = (card.getAttribute('data-categories') || '').split(/\s+/);
+      for (var i = 0; i < active.length; i++) {
+        if (own.indexOf(active[i]) !== -1) { return true; }
+      }
+      return false;
+    }
+
+    function render() {
+      var shown = 0;
+      cards.forEach(function (card) {
+        var ok = matches(card);
+        card.hidden = !ok;
+        if (ok) { shown++; }
+      });
+      emptyEl.hidden = shown !== 0;
+      var filtering = active.length || (input.value || '').trim();
+      countEl.textContent = filtering ? shown + ' of ' + cards.length + (cards.length === 1 ? ' review' : ' reviews') : '';
+      allChip.classList.toggle('is-active', active.length === 0);
+      chips.forEach(function (chip) {
+        chip.classList.toggle('is-active', active.indexOf(chip.getAttribute('data-cat')) !== -1);
+      });
+      syncUrl();
+    }
+
+    function syncUrl() {
+      if (!window.history || !window.history.replaceState) { return; }
+      var url = window.location.pathname;
+      if (active.length) { url += '?c=' + active.map(encodeURIComponent).join(','); }
+      window.history.replaceState(null, '', url);
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var cat = chip.getAttribute('data-cat');
+        var at = active.indexOf(cat);
+        if (at === -1) { active.push(cat); } else { active.splice(at, 1); }
+        render();
+      });
+    });
+
+    allChip.addEventListener('click', function () {
+      active = [];
+      render();
+    });
+
+    input.addEventListener('input', render);
+
+    var preset = new URLSearchParams(window.location.search).get('c');
+    if (preset) {
+      var valid = chips.map(function (c) { return c.getAttribute('data-cat'); });
+      active = preset.split(',').filter(function (c) { return valid.indexOf(c) !== -1; });
+    }
+    render();
+  })();
+  </script>
+{{ end }}

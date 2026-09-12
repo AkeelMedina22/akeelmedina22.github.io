@@ -1,34 +1,69 @@
 baseURL = 'https://akeelmedina22.github.io/'
 languageCode = 'en-us'
+timeZone = 'Asia/Karachi'
 title = "Akeel Ather Medina"
 theme = 'm10c'
 
+[pagination]
+  pagerSize = 12
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+
 [menu]
   [[menu.main]]
-    identifier = "home"
-    name = "Home"
-    url = "/"
+    identifier = "papers"
+    name = "Paper Reviews"
+    url = "/papers/"
     weight = 1
   [[menu.main]]
-    identifier = "tags"
-    name = "Tags"
-    url = "/tags/"
+    identifier = "blog"
+    name = "Blog"
+    url = "/posts/"
     weight = 2
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 3
 
 [params]
-author = 'Akeel'
+author = 'Akeel Ather Medina'
 avatar = 'image.png'
-description = "A place for my thought and programming explorations while starting my journey in HPC"
+favicon = '/favicon.svg'
+tagline = "MSc High Performance Computing, University of Edinburgh"
+description = "Paper reviews and writing on LLM systems, HPC/ML, and interconnects, by Akeel Ather Medina."
+menu_item_separator = " "
+
+  [params.style]
+    darkestColor = "#191b16"
+    darkColor = "#20231d"
+    lightColor = "#bbc2b3"
+    lightestColor = "#f3f5ef"
+    primaryColor = "#9db47e"
 
 [[params.social]]
 icon = "github"
-name = "Github"
+name = "GitHub"
 url = "https://github.com/AkeelMedina22"
 
 [[params.social]]
 icon = "linkedin"
-name = "linkedin"
+name = "LinkedIn"
 url = "https://www.linkedin.com/in/akeelmedina22/"
+
+[[params.social]]
+icon = "mail"
+name = "Email"
+url = "mailto:akeelmedina22@gmail.com"
+
+[markup]
+  [markup.highlight]
+    noClasses = false
+    style = "github-dark"
+  [markup.goldmark.renderer]
+    unsafe = true
 
 [services]
   [services.googleAnalytics]
