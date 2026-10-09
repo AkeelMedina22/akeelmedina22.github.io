@@ -47,14 +47,8 @@ The evaluation is thorough in its measured cases. Comparing against domain-speci
 
 The paper is also written expertly, building each concept onto the last. The paper is self-contained, and a reader without prior understanding of CXL, NDP, etc. can learn from it.
 
-## Weaknesses
-
-Every kernel is hand-written assembly, evaluated against production baselines like vLLM and Polars that contain years of tuning. The authors acknowledge this and leave it to future work, but it is a genuinely large amount of future work.
-
-The programming model requires the user to decide which kernels to offload and when the host is a better choice. This is not exactly a flaw, but also provides future research direction.
+## Thoughts
 
 The overhead of the packet filter was not mentioned in the paper. I thought this was odd, because it sits at the device input port, and examines every single CXL.mem packet, including ordinary read and writes that have nothing to do with NDP. Surely this costs some latency?
-
-The overhead on the host-side is absent, such as core occupancy, uncacheable store latency (typical stores are buffered in the cache), and socket topology (depending on where the CXL device is slotted in, potential UPI/IF contention), etc. On the device-side, the multi-tenant case isn't tested.
 
 M²NDP is proven to work exceedingly well in isolation, and I'd be curious how it works under some more production use-cases, to see if it can actually be implemented by a memory company. After all, this work was done in conjunction with SK hynix.

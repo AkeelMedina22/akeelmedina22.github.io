@@ -3,15 +3,15 @@ title: "About"
 description: "Akeel Ather Medina — MSc High Performance Computing, University of Edinburgh. LLM systems, HPC/ML, interconnects."
 ---
 
-I recently finished an MSc in High Performance Computing at the University of Edinburgh (EPCC), where my thesis measured the cost of KV-cache offloading in LLM inference. I've written more about it in one of my blog posts! Before Edinburgh I spent two years as a software engineer at Abyss Solutions, working on point-cloud analysis pipelines at scale.
+I recently finished an MSc in High Performance Computing at the University of Edinburgh (EPCC), where my thesis measured the time and energy cost of KV-cache offloading in LLM inference on H200 and GH200 systems. I've written more about it in [this post](../posts/thesis/). Before Edinburgh I spent two years as a software engineer at Abyss Solutions, building point-cloud analysis pipelines at scale.
 
-My interests lie around MLSys:
+I'm broadly interested in HPC and ML. More specifically:
 
-- **LLM inference** — KV-cache management, hardware/software co-design, down to the phy.
-- **HPC for ML** — ML at scale. Scale-out algorithms and topologies, 
-- **Interconnects and memory hierarchy** — CXL, PNM, optimizing tiering performance.
+- **Systems**: command submission, drivers, and the Linux side of GPUs and accelerators.
+- **Interconnects and memory hierarchy**: PCIe, NVLink-C2C, CXL, and tiered memory.
+- **LLM inference**: KV-cache management and offloading, hardware/software co-design.
 
-I'm applying for PhD positions in these areas. The best way to reach me is [email](mailto:akeelmedina22@gmail.com).
+I'm looking for PhD positions and engineering roles in these areas. The best way to reach me is [email](mailto:akeelmedina22@gmail.com).
 
 ## Education
 
